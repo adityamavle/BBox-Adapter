@@ -11,13 +11,11 @@ def log_attempt_number(retry_state):
 class LLM_API():
     
     def __init__(self, model="meta-llama/Llama-3.2-1B-Instruct", query_params=None):
-        self.client = InferenceClient(token="TOKENS")
+        self.client = InferenceClient(token="INSERT_TOKEN_HERE")
         self.query_params = query_params
         self.model = "meta-llama/Llama-3.2-1B-Instruct"
         self.token_usage = {"input": 0, "output": 0}
-        self.tokens = ["TOKENS"] #add our other hf tokens here
-        self.prompt_num = 0
-        self.prompts_per_day = 1000
+        
 
     @retry(wait=wait_random_exponential(min=2, max=8), stop=stop_after_attempt(30), after=log_attempt_number)
     def query(self, 
@@ -30,12 +28,9 @@ class LLM_API():
         prompt_chat = [
                 {"role": "user", "content": prompt} 
             ]
-        if len(self.tokens) <= self.prompt_num % self.prompts_per_day:
-            self.client = InferenceClient(token=self.tokens[self.prompt_num % self.prompts_per_day])
         
         temp = self.query_params['temperature'] if temp is None else temp
         n = self.query_params['num_candidates'] if n is None else n
-        self.prompt_num += n
         contents = []
         for _ in range(n):
             raw_response = self.client.chat.completions.create(

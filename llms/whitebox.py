@@ -38,9 +38,7 @@ class Whitebox_LLM():
             config,
         ):
         self.config = config
-        self.tokenizer = AutoTokenizer.from_pretrained(
-                config['critic_model'],
-                truncation_side='left',
+        self.tokenizer = AutoTokenizer.from_pretrained("google-bert/bert-base-uncased",
             )
         self.tokenizer.pad_token = self.tokenizer.eos_token
         self.tokenizer.deprecation_warnings["Asking-to-pad-a-fast-tokenizer"] = True
