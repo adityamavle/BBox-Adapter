@@ -48,6 +48,7 @@ logger_file_map = {
     "eval": "eval_details.log",
     "error": "error.log",
     "adaptor": "adaptor_rating.log",
+    "tokens": "tokens.log"
 }
 
 # Initialize loggers
