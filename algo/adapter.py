@@ -258,4 +258,3 @@ class Adapter(Whitebox_LLM):
         
     def update_ground_truths(self, batch):
         pass
-    
