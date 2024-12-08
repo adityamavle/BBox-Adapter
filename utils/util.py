@@ -27,6 +27,7 @@ def format_end2end_prompt(q, ans, info=False):
 
 def extract_first_sentences(text_list):
     """Extracts the first sentence from a list of text."""
+    return text_list
     first_sentences = []
     
     for text in text_list:
@@ -51,6 +52,7 @@ def extract_first_sentences(text_list):
     return first_sentences
 
 def deduplication(text_list, num_to_keep, fill_to):
+    return text_list
     if len(text_list) == 0:
         raise ValueError("The list of texts is empty.")
     # Count the frequency of each item
@@ -72,7 +74,7 @@ def deduplication(text_list, num_to_keep, fill_to):
     # fill to the end of the list with "<EMPTY>"
     while len(unique_items) < fill_to:
         unique_items.append("<EMPTY>")
-    return unique_items
+
 
 def accumulate_strings(string_list):
     accumulated_list = []
@@ -87,6 +89,19 @@ def accumulate_strings(string_list):
         accumulated_list.extend(accumulated)
 
     return accumulated_list
+# Used for eliciting incremental reasoning in models
+# Input: string_list = [
+  #  "Line1\nLine2\nLine3",
+ #   "Part1\nPart2"
+#]
+
+# #Output: [
+#     "Line1", 
+#     "Line1\nLine2", 
+#     "Line1\nLine2\nLine3", 
+#     "Part1", 
+#     "Part1\nPart2"
+# ]
 
 def get_answer_start_idx(full_tensor, pattern):
     

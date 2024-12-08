@@ -103,7 +103,7 @@ class Adapter(Whitebox_LLM):
     def train(self, train_dataset, test_dataset):
         torch.cuda.empty_cache()
         self.accelerator.free_memory()
-        
+    
         num_epochs = self.config['num_epochs']
         num_epochs_offline_warmup = self.config.get("num_epochs_offline_warmup", 1) 
         use_blackbox_warmup = self.config.get("use_blackbox_warmup", False)
@@ -117,14 +117,12 @@ class Adapter(Whitebox_LLM):
             train_dataset, eval_dataset = train_dataset.train_test_split(test_size=validation_ratio, shuffle=False).values()
         else: 
             eval_dataset = test_dataset
-            
+
         self.accelerator.print(f"Train size: {len(train_dataset)}, eval size: {len(eval_dataset)}")
         update_dataloader = DataLoader(train_dataset, batch_size=len(train_dataset), shuffle=True, collate_fn=lambda x: x)
-        
         self.model, self.optimizer, self.lr_scheduler = self.accelerator.prepare(
             self.model, self.optimizer, self.lr_scheduler
             )
-
         if self.config["eval_blackbox"]:
             update_log_folder(
                 "eval_blackbox_only", 
@@ -246,8 +244,6 @@ class Adapter(Whitebox_LLM):
             f'Input tokens: {usage["input"]}/{self.token_usage["input"]}, output tokens: {usage["output"]}/{self.token_usage["output"]}, ' +\
                 f'total tokens: {self.token_usage["input"] + self.token_usage["output"]}'
             )
-    
-    
     def prepare_for_training(self):
         raise NotImplementedError
     

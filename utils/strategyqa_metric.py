@@ -1,21 +1,25 @@
 import numpy as np
 from utils.loggers import loggers
+from utils.faiss_similarity_check import FAISSSimilarityChecker
 
+# def is_correct(model_completion, gt_answer):
+#     # Extract the boolean value from the model completion.
+#     # Assuming the format is "xxxx\nxxxx\nxxxx\n #### Yes." or "xxxx\nxxxx\nxxxx\n #### No."
+#     model_answer = model_completion.split('####')[-1].strip().lower().replace('.', '')
+
+#     "Context: Question: \n #### ['4,036', '4,036 hectares']"
+#     # Check if the extracted answer is valid
+#     if model_answer not in ['yes', 'no']:
+#         return False
+
+#     # Convert the extracted answer to boolean
+#     model_answer_bool = True if model_answer == 'yes' else False
+
+#     return model_answer_bool == gt_answer
 
 def is_correct(model_completion, gt_answer):
-    # Extract the boolean value from the model completion.
-    # Assuming the format is "xxxx\nxxxx\nxxxx\n #### Yes." or "xxxx\nxxxx\nxxxx\n #### No."
-    model_answer = model_completion.split('####')[-1].strip().lower().replace('.', '')
-
-    # Check if the extracted answer is valid
-    if model_answer not in ['yes', 'no']:
-        return False
-
-    # Convert the extracted answer to boolean
-    model_answer_bool = True if model_answer == 'yes' else False
-
-    return model_answer_bool == gt_answer
-
+    similarity_checker = FAISSSimilarityChecker()
+    return similarity_checker._compute_similarity(gt_answer,model_completion)
 
 def get_accuracy(results):
     # Initialize a dictionary to store round-wise accuracies

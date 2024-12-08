@@ -25,7 +25,7 @@ temperature: 1.0
 frequency_penalty: 0 
 presence_penalty: 0 
 stop: ["\n", "\n\n", "\n\n\n"]
-max_tokens: 20
+max_tokens: 80
 
 # TRAINING_PARAMS
 ## offline warmup
@@ -40,7 +40,7 @@ num_candidates_blackbox_warmup: 10
 ## online finetuning
 num_online_finetuning_repeat: 1
 
-num_epochs: 2
+num_epochs: 3
 batch_size: 64 
 gradient_accumulation_steps: 1 
 

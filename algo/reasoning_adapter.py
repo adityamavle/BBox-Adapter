@@ -25,8 +25,6 @@ class Reasoning_Adapter(Adapter):
                 prompt=prompt,
             )
         self.acc_table = wandb.Table(columns=["stage", "accuracy"])
- 
- 
     def get_ans_from_blackbox(self, q, n=1, temp=1):
         qa_text = self.formulate_qa(q=q, a="")
         prompt = f"{self.prompt}\n{qa_text}"
@@ -50,16 +48,19 @@ class Reasoning_Adapter(Adapter):
                 question = self.formulate_question(b)
                 if use_adapter:
                     beam_search = Beam_Search(
-                                params=self.config,
-                                thought_generator=self.thought_generator,
-                                init_sequence=question,
-                                stop_criterion=self.stop_criterion,
-                                qa_template=self.qa_template
+                                params = self.config,
+                                thought_generator = self.thought_generator,
+                                init_sequence = question,
+                                stop_criterion = self.stop_criterion,
+                                qa_template = self.qa_template
                             )
                     negative_ans = beam_search(return_with_init=False)[:self.config["num_negatives_for_training"]]
+                    #generation of candidate texts
+                    # these arent essentially negative
+                    # we'll find if they are negative in when we run the
+                    # self.is_correct function
                 else:
-                    negative_ans = self.get_ans_from_blackbox(q=question, n=self.config["num_candidates_blackbox_warmup"])
-                    
+                    negative_ans = self.get_ans_from_blackbox(q=question, n=self.config["num_candidates_blackbox_warmup"])   
                 if negative_ans is None:
                     return None
                 
@@ -89,7 +90,7 @@ class Reasoning_Adapter(Adapter):
                 if result:
                     completions, ground_truth = result
                     for c in completions:
-                        if self.is_correct(c, ground_truth) and self.config["use_outcome_supervision"]:
+                        if self.is_correct(c, ground_truth) and self.config["use_outcome_supervision"]: 
                             results["positive_texts"].append(c)
                         else:
                             results["negative_texts"].append(c)
@@ -100,7 +101,7 @@ class Reasoning_Adapter(Adapter):
         if self.accelerator.is_main_process:  
             positive_texts = []
             negative_texts = []
-            
+    
             for b in batch:
                 question = self.formulate_question(b)
                 positive_ans = self.get_positive_ans(b)
@@ -108,7 +109,6 @@ class Reasoning_Adapter(Adapter):
                     positive_texts.extend([ans for ans in accumulate_strings(positive_ans)])
                 else:
                     positive_texts.extend([self.formulate_qa(q=question, a=ans) for ans in accumulate_strings(positive_ans)])
-
             for result in gathered_results:
                 negative_texts.extend(result["negative_texts"])
                 positive_texts.extend(result["positive_texts"])
@@ -118,8 +118,7 @@ class Reasoning_Adapter(Adapter):
                     negative_texts, 
                     save_to=dataset_path
                 )
-
-
+# This ensures that the positive_texts array contains not only the generated candidate answers deemed correct by the is_correct function but also the ground truth answers explicitly provided in the batch. 
     def evaluate(self, eval_dataset, use_adapter=True, stage_name=""):
         
         def process_batch_item(b):

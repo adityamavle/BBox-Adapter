@@ -19,24 +19,19 @@ def update_log_folder(new_dir, process_index):
     DIR = f"{BASE_DIR}/{new_dir}/gpu_{process_index}"
     os.makedirs(DIR, exist_ok=True)
 
-    # Update file handlers for each logger
     for logger_name, logger in loggers.items():
-        # Remove old file handlers
         for handler in logger.handlers[:]:
             if isinstance(handler, FileHandler):
                 logger.removeHandler(handler)
                 
         if logger_name in ["train", "eval"]:
-            # For 'train' and 'eval' loggers, use the shared directory
             logger_dir = f"{BASE_DIR}/{new_dir}"
         else:
-            # For other loggers, create a separate directory for each GPU process
             logger_dir = DIR
     
-        # Create a new file handler with the updated directory
         file_name = logger_file_map[logger.name]
-        new_file_handler = FileHandler(f"{logger_dir}/{file_name}")
-        new_file_handler.setFormatter(Formatter('%(message)s'))
+        new_file_handler = FileHandler(f"{logger_dir}/{file_name}", encoding="utf-8")  # Added UTF-8 encoding
+        new_file_handler.setFormatter(Formatter('%(asctime)s - %(levelname)s - %(message)s'))
         logger.addHandler(new_file_handler)
 
 # Store loggers and their corresponding file names
@@ -53,5 +48,15 @@ logger_file_map = {
 
 # Initialize loggers
 loggers = {name: logging.getLogger(name) for name in logger_file_map}
-for logger in loggers.values():
+for logger_name, logger in loggers.items():
     logger.setLevel(logging.DEBUG)
+    
+    # Add FileHandler with UTF-8 encoding
+    file_handler = FileHandler(f"{DIR}/{logger_file_map[logger_name]}", encoding="utf-8")  # Added UTF-8 encoding
+    file_handler.setFormatter(Formatter('%(asctime)s - %(levelname)s - %(message)s'))
+    logger.addHandler(file_handler)
+
+    # Add StreamHandler for console output (optional)
+    stream_handler = logging.StreamHandler()
+    stream_handler.setFormatter(Formatter('%(asctime)s - %(levelname)s - %(message)s'))
+    logger.addHandler(stream_handler)

@@ -1,3 +1,5 @@
 /BBox_env/
 /logs/
 /wandb/
+*.csv
+/data/
