@@ -2,7 +2,7 @@
 import os
 import traceback
 os.environ["HF_HOME"] = "../hf_cache"
-os.environ["HF_TOKEN"] = "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"
+os.environ["HF_TOKEN"] = "your token key"
 
 # MD5 Checksums are at: /home/hice1/rsrivastava76/.llama/checkpoints/Llama3.2-1B/checklist.chk
 
